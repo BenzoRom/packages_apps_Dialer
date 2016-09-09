@@ -97,7 +97,11 @@ public class SoundSettingsFragment extends PreferenceFragment
     if (hasVibrator()) {
       mVibrateWhenRinging.setOnPreferenceChangeListener(this);
     } else {
-      getPreferenceScreen().removePreference(mVibrateWhenRinging);
+      PreferenceScreen ps = getPreferenceScreen();
+      Preference inCallVibration = findPreference(
+          context.getString(R.string.incall_vibration_category_key));
+      ps.removePreference(mVibrateWhenRinging);
+      ps.removePreference(inCallVibration);
       mVibrateWhenRinging = null;
     }
 
@@ -167,6 +171,11 @@ public class SoundSettingsFragment extends PreferenceFragment
       int index = mDtmfToneLength.findIndexOfValue((String) objValue);
       Settings.System.putInt(
           getActivity().getContentResolver(), Settings.System.DTMF_TONE_TYPE_WHEN_DIALING, index);
+    } else if (preference == mPlayDtmfTone) {
+      Settings.System.putInt(
+          getActivity().getContentResolver(),
+          Settings.System.DTMF_TONE_WHEN_DIALING,
+          mPlayDtmfTone.isChecked() ? PLAY_DTMF_TONE : NO_DTMF_TONE);
     }
     return true;
   }
@@ -181,12 +190,6 @@ public class SoundSettingsFragment extends PreferenceFragment
               Toast.LENGTH_SHORT)
           .show();
       return true;
-    }
-    if (preference == mPlayDtmfTone) {
-      Settings.System.putInt(
-          getActivity().getContentResolver(),
-          Settings.System.DTMF_TONE_WHEN_DIALING,
-          mPlayDtmfTone.isChecked() ? PLAY_DTMF_TONE : NO_DTMF_TONE);
     }
     return true;
   }
